@@ -45,7 +45,7 @@ xsize , ysize , _ = img.shape
 bsumm = 0
 gsumm = 0
 rsumm = 0
-blurstrong = 5
+blurstrong = 10
 blurpixn = 0
 for xp in range(1, xsize-1):  # тут оно работает
     for yp in range(1, ysize-1):
