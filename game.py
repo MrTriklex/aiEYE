@@ -8,6 +8,7 @@ import imutils
 
 
 contlist = list()
+contorsize = list()
 timer1 = 0
 
 
@@ -120,6 +121,8 @@ while True:
     pix = pyautogui.screenshot(region=(int(left), int(top), window_resolution[0], window_resolution[1]))
     numpix = cv2.cvtColor(np.array(pix), cv2.COLOR_RGB2BGR)
 
+    numpix = numpix[250:, :, :]
+
     min_ = (ranges['min_h1']['current'], ranges2['min_h2']['current'], ranges3['min_h3']['current'])
     max_ = (ranges['max_h1']['current'], ranges2['max_h2']['current'], ranges3['max_h3']['current'])
 
@@ -140,7 +143,13 @@ while True:
 
             # Получаем прямоугольник, обрамляющий наш контур:
             (x, y, w, h) = cv2.boundingRect(contours[id])
-            if y > 240 and x > 200 and x < 440:
+            max_size = 0
+
+            if w * h > max_size:
+                max_size = w * h
+            contorsize.append(w * h)
+
+            if x > 160 and x < 520:
 
                 # И выводим его:
                 cv2.rectangle(numpix, (x, y), (x + w, y + h), (0, 255, 0), 1)
@@ -164,19 +173,60 @@ while True:
 
     for id in range(len(contours)):
         max_x, max_y = contlist[id]
-        if (abs(max_x - 320)*abs(max_x - 320) + abs(max_y - 240)*abs(max_y - 240))**0.5 > max_large:
+        large = (abs(max_x - 320)*abs(max_x - 320) + abs(max_y - 240)*abs(max_y - 240))**0.5
+        if large > max_large:
             max_id = id
+            max_large = large
+    max_large = 0
+    poss_x = 0
+    poss_y = 0
     for id in range(len(contours)):
-        if id == max_id:
-            cv2.line(numpix, (320, 480), contlist[id], (0, 255, 0), 2)
-        else:
-            cv2.line(numpix, (320, 480), contlist[id], (0, 0, 255), 2)
+        if 0 == 0:
+            if contorsize[id] == max_size:
+                cv2.line(numpix, (320, 480), contlist[id], (0, 255, 0), 2)
+                poss_x,poss_y = contlist[id]
+
+            else:
+                cv2.line(numpix, (320, 480), contlist[id], (0, 0, 255), 2)
+    if 320 > poss_x:
+        keyboard.press("d")
+        image = cv2.putText(numpix, 'd', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+        time.sleep(1)
+    elif 320 < poss_x:
+        keyboard.press("a")
+        image = cv2.putText(numpix, 'a', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+        time.sleep(1)
+
+
+
+    #    start_x = 480
+  #      start_y = 320
+     #   x , y = contlist[id]
+    #    if x > 240 and y > 300 and x < 440:
+    #        M = cv2.moments(contours[id])
+
+            # Центр тяжести это первый момент (сумма радиус-векторов), отнесенный к нулевому (площади-массе)
+      #      if 0 != M['m00']:
+         #       cx = int(M['m10'] / M['m00'])
+           #     cy = int(M['m01'] / M['m00'])
+         #       cv2.circle(numpix, (cx, cy), 5, 255, 2)
+       #         cv2.line(numpix, (start_y, start_x), (cx, cy), (255,), 2)
+        #        tangen = start_x - cx
+       #         normal = start_y - cy
+
+         #       if normal != 0:
+       #             angle = np.degrees(np.arctan(tangen / normal))
+        #        else:
+        #            angle = None
+#
+            #cv2.line(numpix, (start_y, start_x), (start_y, y + h // 2), (255,), 2)
 
 
 
 
     contlist = []
-
+    contorsize =[]
+    cv2.line(numpix, (0, 250), (640,250), (0, 255, 0), 1)
 
 
     cv2.imshow('result', numpix)
@@ -184,7 +234,7 @@ while True:
     timer1 += 1
 
     if timer1 > 500:
-        keyboard.press("w")
+        #keyboard.press("w")
         timer1 = 0
 
 
