@@ -14,7 +14,9 @@ contorsize = list()
 timer1 = 0
 t1 = 0
 tf = 0
-
+megamoveflag = 0
+megamoveflag2 = 0
+firstflag1 = 0
 
 cv2.namedWindow('find')
 
@@ -264,7 +266,7 @@ while True:
 
     xm, ym = pyautogui.position()
     xw, yw , _ , _ = nfs_window_location
-    if xm > xw and xm < xw + 640 and ym > yw and ym < yw + 480:
+    if xm > xw and xm < xw + 640 and ym > yw and ym < yw + 480 and megamoveflag == 0:
         if 200 < poss_x and tf == 1 and poss_x != 0:
             sleep(0.01)
             global_status += 10
@@ -289,7 +291,7 @@ while True:
             kayyyw = 'a'
             image = cv2.putText(numpix, 'a'+ str(poss_x), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
             #time.sleep(0.2)
-        if (len(contlist) == 0):
+        if (len(contlist) == 0and megamoveflag == 0):
             image = cv2.putText(numpix, 'f', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2,
                                 cv2.LINE_AA)
             if  kayyyw == 'd':
@@ -346,8 +348,8 @@ while True:
     #                angle = None
 
             #cv2.line(numpix, (start_y, start_x), (start_y, y + h // 2), (255,), 2)
-
-
+    if megamoveflag == 1:
+        image = cv2.putText(numpix, 'w' , (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
 
 
     contlist = []
@@ -357,12 +359,27 @@ while True:
 
     cv2.imshow('result', numpix)
     cv2.imshow('find', mask)
-    timer1 += 1
+    #timer1 += 1
 
-    if timer1 > 500:
-        #keyboard.press("w")
-        timer1 = 0
+    #if timer1 > 10:
+    if megamoveflag == 0:
+        keyboard.press("w")
+        sleep(0.01)
+        #timer1 = 0
 
+
+    if keyboard.is_pressed('t'):
+        if megamoveflag == 0 and megamoveflag2 == 1:
+            megamoveflag = 1
+            megamoveflag2 = 0
+        elif megamoveflag == 1 and megamoveflag2 == 1:
+            megamoveflag = 0
+            megamoveflag2 = 0
+    else:
+        megamoveflag2 = 1
+    if firstflag1 == 0:
+        sleep(3)
+        firstflag1 = 1
 
 
     if cv2.waitKey(1) == 27:
