@@ -3,20 +3,63 @@ import pyautogui
 import time
 import numpy as np
 import cv2
-from time import sleep
+from time import sleep , perf_counter
+import keyboard_emu as kbe
+from threading import Thread
 import imutils
 
 
 contlist = list()
 contorsize = list()
 timer1 = 0
-
-
+t1 = 0
+tf = 0
 
 
 cv2.namedWindow('find')
 
 
+
+
+
+
+
+
+
+def func(idx, status: callable = None):
+    while True:
+        position = status()
+        #print(position)
+        if position < 300 or position > 200:
+            if position > 211:
+                kbe.key_press(kbe.SC_RIGHT)
+
+            if position < 211:
+                kbe.key_press(kbe.SC_LEFT)
+
+
+
+def func2(idx, status2: callable = None):
+    while True:
+        position = status2()
+        #print(position)
+        if position < 300 or position > 200:
+            if position > 211:
+                kbe.key_press(kbe.SC_UP)
+
+            if position < 211:
+                kbe.key_press(kbe.SC_DOWN)
+
+
+kayyyw = 'start'
+global_status = 211
+global_status2 = 211
+
+rangesnik = {
+    'min_h1': {'current': 33, 'max': 180},    'max_h1': {'current': 66, 'max': 180},
+    'min_sv': {'current': 26, 'max': 255},    'max_sv': {'current': 198, 'max': 255},
+    'counters': {'current':0, 'max': 5000}
+}
 
 
 ranges = {
@@ -117,11 +160,29 @@ window = (left, top, left+window_resolution[0], top+window_resolution[1])
 
 cv2.namedWindow('result')
 
+
+
+def my_status():
+    global global_status
+    return global_status
+
+def my_status2():
+    global global_status2
+    return global_status2
+
+
+th = Thread(target=func, args=(0, my_status))
+th.start()
+
+
+
+
 while True:
     pix = pyautogui.screenshot(region=(int(left), int(top), window_resolution[0], window_resolution[1]))
     numpix = cv2.cvtColor(np.array(pix), cv2.COLOR_RGB2BGR)
 
-    numpix = numpix[250:, :, :]
+    numpix = numpix[250:, 120:520, :]
+    #numpix = cv2.blur(numpix, (20, 20))
 
     min_ = (ranges['min_h1']['current'], ranges2['min_h2']['current'], ranges3['min_h3']['current'])
     max_ = (ranges['max_h1']['current'], ranges2['max_h2']['current'], ranges3['max_h3']['current'])
@@ -146,17 +207,15 @@ while True:
             max_size = 0
 
             if w * h > max_size:
-                max_size = w * h
+                max_size = id
             contorsize.append(w * h)
 
-            if x > 160 and x < 520:
 
-                # И выводим его:
-                cv2.rectangle(numpix, (x, y), (x + w, y + h), (0, 255, 0), 1)
+            # И выводим его:
+            cv2.rectangle(numpix, (x, y), (x + w, y + h), (0, 255, 0), 1)
 
-                contlist.append((x, y))
-            else:
-                contlist.append((320, 480))
+            contlist.append((x + w // 2, y + h // 2))
+
 
             #if y > 320:
             #    keyboard.press("d")
@@ -173,52 +232,119 @@ while True:
 
     for id in range(len(contours)):
         max_x, max_y = contlist[id]
-        large = (abs(max_x - 320)*abs(max_x - 320) + abs(max_y - 240)*abs(max_y - 240))**0.5
+        large = (abs(max_x - 200)*abs(max_x - 200) + abs(max_y - 115)*abs(max_y - 115))**0.5
         if large > max_large:
             max_id = id
             max_large = large
     max_large = 0
     poss_x = 0
     poss_y = 0
+    poss_x1 = 0
+    poss_y1 = 0
+
     for id in range(len(contours)):
         if 0 == 0:
-            if contorsize[id] == max_size:
-                cv2.line(numpix, (320, 480), contlist[id], (0, 255, 0), 2)
+            poss_x1, poss_y1 = contlist[id]
+            if max_id == id:
+                cv2.line(numpix, (200, 230), contlist[id], (0, 255, 0), 2)
                 poss_x,poss_y = contlist[id]
 
             else:
-                cv2.line(numpix, (320, 480), contlist[id], (0, 0, 255), 2)
-    if 320 > poss_x:
-        keyboard.press("d")
-        image = cv2.putText(numpix, 'd', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-        time.sleep(1)
-    elif 320 < poss_x:
-        keyboard.press("a")
-        image = cv2.putText(numpix, 'a', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-        time.sleep(1)
+                cv2.line(numpix, (200, 230), contlist[id], (0, 0, 255), 2)
+
+
+    if t1 + 0.1 < perf_counter():
+        t1 = perf_counter()
+        tf = 1
+    else:
+        tf = 0
+    tf = 1
 
 
 
-    #    start_x = 480
-  #      start_y = 320
-     #   x , y = contlist[id]
-    #    if x > 240 and y > 300 and x < 440:
-    #        M = cv2.moments(contours[id])
+    xm, ym = pyautogui.position()
+    xw, yw , _ , _ = nfs_window_location
+    if xm > xw and xm < xw + 640 and ym > yw and ym < yw + 480:
+        if 200 < poss_x and tf == 1 and poss_x != 0:
+            sleep(0.01)
+            global_status += 10
+            if global_status > 300:
+                global_status = 211
+            elif global_status < 200:
+                global_status = 211
+            #keyboard.press("d")
+            kayyyw= 'd'
+            image = cv2.putText(numpix, 'd' + str(poss_x), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+            #time.sleep(0.2)
+            
 
+        elif 200 > poss_x and tf == 1and poss_x != 0:
+            sleep(0.01)
+            global_status -= 10
+            if global_status > 300:
+                global_status = 211
+            elif global_status < 200:
+                global_status = 211
+            #keyboard.press("a")
+            kayyyw = 'a'
+            image = cv2.putText(numpix, 'a'+ str(poss_x), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+            #time.sleep(0.2)
+        if (len(contlist) == 0):
+            image = cv2.putText(numpix, 'f', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2,
+                                cv2.LINE_AA)
+            if  kayyyw == 'd':
+                image = cv2.putText(numpix, 'fd', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2,
+                                    cv2.LINE_AA)
+                #global_status2 -= 10
+                #if global_status2 > 300:
+                #    global_status2 = 211
+                #elif global_status2 < 200:
+                #    global_status2 = 211
+                global_status += 10
+                if global_status > 300:
+                    global_status = 211
+                elif global_status < 200:
+                    global_status = 211
+                sleep(0.05)
+            elif kayyyw == 'a':
+                image = cv2.putText(numpix, 'fa', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2,
+                                    cv2.LINE_AA)
+                #global_status2 -= 10
+                #if global_status2 > 300:
+                #    global_status2 = 211
+                #elif global_status2 < 200:
+                #    global_status2 = 211
+                global_status -= 10
+                if global_status > 300:
+                    global_status = 211
+                elif global_status < 200:
+                    global_status = 211
+                sleep(0.05)
+
+
+
+        #start_x = 200
+        #start_y = 230
+        #x , y = contlist[max_id]
+        #if 0 == 0:
+        #    M = cv2.moments(contours[max_id])
+#
             # Центр тяжести это первый момент (сумма радиус-векторов), отнесенный к нулевому (площади-массе)
       #      if 0 != M['m00']:
-         #       cx = int(M['m10'] / M['m00'])
-           #     cy = int(M['m01'] / M['m00'])
-         #       cv2.circle(numpix, (cx, cy), 5, 255, 2)
-       #         cv2.line(numpix, (start_y, start_x), (cx, cy), (255,), 2)
-        #        tangen = start_x - cx
-       #         normal = start_y - cy
+     #           cx = int(M['m10'] / M['m00'])
+    #            cy = int(M['m01'] / M['m00'])
+    #            cv2.circle(numpix, (cx, cy), 5, 255, 2)
+    #            cv2.line(numpix, (start_y, start_x), (cx, cy), (255,), 2)
+     #           tangen = start_x - cx
+    #            normal = start_y - cy
+    #            poss_x = cx
+    #            poss_y = cx
 
-         #       if normal != 0:
-       #             angle = np.degrees(np.arctan(tangen / normal))
-        #        else:
-        #            angle = None
-#
+    #            if normal != 0:
+    #                angle = np.degrees(np.arctan(tangen / normal))
+     #           else:
+    #                angle = None
+
             #cv2.line(numpix, (start_y, start_x), (start_y, y + h // 2), (255,), 2)
 
 
