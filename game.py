@@ -196,7 +196,7 @@ while True:
     pix = pyautogui.screenshot(region=(int(left), int(top), window_resolution[0], window_resolution[1]))
     numpix = cv2.cvtColor(np.array(pix), cv2.COLOR_RGB2BGR)
 
-    numpix = numpix[250:, 120:520, :]
+    numpix = numpix[250:, :, :]
     #numpix = cv2.blur(numpix, (20, 20))
 
     min_ = (ranges['min_h1']['current'], ranges2['min_h2']['current'], ranges3['min_h3']['current'])
@@ -215,6 +215,10 @@ while True:
         # Третий аргумент — это индекс aaтура, который мы хотим вывести. Мы хотим самый большой.
         # Вывести все можно, передав -1 вместо 0:
         cv2.drawContours(mask, contours, 0, (255, 0, 0), 1)
+        #if len(contours) > 20:
+        #    limit = 20
+        #else:
+        #    limit = len(contours)
         for id in range(len(contours)):
 
             # Получаем прямоугольник, обрамляющий наш контур:
@@ -247,7 +251,7 @@ while True:
 
     for id in range(len(contours)):
         max_x, max_y = contlist[id]
-        large = (abs(max_x - 200)*abs(max_x - 200) + abs(max_y - 115)*abs(max_y - 115))**0.5
+        large = (abs(max_x - 320)*abs(max_x - 320) + abs(max_y - 115)*abs(max_y - 115))**0.5
         if large > max_large:
             max_id = id
             max_large = large
@@ -261,11 +265,11 @@ while True:
         if 0 == 0:
             poss_x1, poss_y1 = contlist[id]
             if max_id == id:
-                cv2.line(numpix, (200, 230), contlist[id], (0, 255, 0), 2)
+                cv2.line(numpix, (320, 230), contlist[id], (0, 255, 0), 2)
                 poss_x,poss_y = contlist[id]
 
             else:
-                cv2.line(numpix, (200, 230), contlist[id], (0, 0, 255), 2)
+                cv2.line(numpix, (320, 230), contlist[id], (0, 0, 255), 2)
 
 
     if t1 + 0.1 < perf_counter():
@@ -284,7 +288,7 @@ while True:
     PIDRTIMER = time.perf_counter() - PIDRTIMER2
     if xm > xw and xm < xw + 640 and ym > yw and ym < yw + 480 and megamoveflag == 0:
        if poss_x != 0:
-            PIDRGIVE = PIDR(poss_x , 200.0 , 1.0 , 0.0 , 0.0, PIDRTIMER , -1 , 1)
+            PIDRGIVE = PIDR(poss_x , 320.0 , 1.0 , 0.0 , 0.0, PIDRTIMER , -1 , 1)
             if PIDRGIVE == -1:
                 sleep(0.01)
                 global_status += 10
@@ -309,6 +313,14 @@ while True:
                 image = cv2.putText(numpix, 'a' + str(poss_x), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
                 time.sleep(0.2)
                 PIDRTIMER2 = time.perf_counter()
+       
+       
+       
+       
+       
+       
+       
+
 
 
 
@@ -330,7 +342,7 @@ while True:
    #         kayyyw= 'd'
    #         image = cv2.putText(numpix, 'd' + str(poss_x), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
             #time.sleep(0.2)
-            
+
 
   #     elif 200 > poss_x and tf == 1and poss_x != 0:
    #         sleep(0.01)
