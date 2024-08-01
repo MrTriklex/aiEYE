@@ -375,6 +375,7 @@ while True:
         elif megamoveflag == 1 and megamoveflag2 == 1:
             megamoveflag = 0
             megamoveflag2 = 0
+            sleep(5)
     else:
         megamoveflag2 = 1
     if firstflag1 == 0:
