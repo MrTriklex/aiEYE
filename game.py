@@ -20,14 +20,27 @@ firstflag1 = 0
 
 cv2.namedWindow('find')
 
+def constrain(val, min_val, max_val):
+
+    if val < min_val: return min_val
+    if val > max_val: return max_val
+    return val
 
 
 
 
+PIDRTIMER = 0
+PIDRTIMER2 = 0
+def PIDR(input, setpoint, kp, ki, kd,dt, minOut, maxOut):
+    err = setpoint - input
+    integral = 0
+    prevErr = 0
+    integral = constrain(integral + err * dt * ki, minOut, maxOut)
+    D = (err - prevErr) / dt
+    prevErr = err
+    return constrain(err * kp + integral + D * kd, minOut, maxOut)
 
-
-
-
+#print(PIDR(40.0 , 0.0 , 1.0 , 0.0 , 0.0, 10.0 , -1.0 , 1.0))
 def func(idx, status: callable = None):
     while True:
         position = status()
@@ -264,34 +277,73 @@ while True:
 
 
 
+
     xm, ym = pyautogui.position()
     xw, yw , _ , _ = nfs_window_location
+
+    PIDRTIMER = time.perf_counter() - PIDRTIMER2
     if xm > xw and xm < xw + 640 and ym > yw and ym < yw + 480 and megamoveflag == 0:
-        if 200 < poss_x and tf == 1 and poss_x != 0:
-            sleep(0.01)
-            global_status += 10
-            if global_status > 300:
-                global_status = 211
-            elif global_status < 200:
-                global_status = 211
-            #keyboard.press("d")
-            kayyyw= 'd'
-            image = cv2.putText(numpix, 'd' + str(poss_x), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+       if poss_x != 0:
+            PIDRGIVE = PIDR(poss_x , 200.0 , 1.0 , 0.0 , 0.0, PIDRTIMER , -1 , 1)
+            if PIDRGIVE == -1:
+                sleep(0.01)
+                global_status += 10
+                if global_status > 300:
+                    global_status = 211
+                elif global_status < 200:
+                    global_status = 211
+                #keyboard.press("d")
+                kayyyw= 'd'
+                image = cv2.putText(numpix, 'd' + str(poss_x), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                time.sleep(0.2)
+                PIDRTIMER2 = time.perf_counter()
+            elif PIDRGIVE == 1:
+                sleep(0.01)
+                global_status -= 10
+                if global_status > 300:
+                    global_status = 211
+                elif global_status < 200:
+                    global_status = 211
+                #keyboard.press("d")
+                kayyyw= 'a'
+                image = cv2.putText(numpix, 'a' + str(poss_x), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                time.sleep(0.2)
+                PIDRTIMER2 = time.perf_counter()
+
+
+
+
+
+
+
+
+
+
+        #if 200 < poss_x and tf == 1 and poss_x != 0:
+       #     sleep(0.01)
+      #      global_status += 10
+     #       if global_status > 300:
+     #           global_status = 211
+     #       elif global_status < 200:
+   #             global_status = 211
+    #        #keyboard.press("d")
+   #         kayyyw= 'd'
+   #         image = cv2.putText(numpix, 'd' + str(poss_x), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
             #time.sleep(0.2)
             
 
-        elif 200 > poss_x and tf == 1and poss_x != 0:
-            sleep(0.01)
-            global_status -= 10
-            if global_status > 300:
-                global_status = 211
-            elif global_status < 200:
-                global_status = 211
+  #     elif 200 > poss_x and tf == 1and poss_x != 0:
+   #         sleep(0.01)
+     #       global_status -= 10
+     #       if global_status > 300:
+     #           global_status = 211
+      #      elif global_status < 200:
+     #           global_status = 211
             #keyboard.press("a")
-            kayyyw = 'a'
-            image = cv2.putText(numpix, 'a'+ str(poss_x), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+     #       kayyyw = 'a'
+     #       image = cv2.putText(numpix, 'a'+ str(poss_x), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
             #time.sleep(0.2)
-        if (len(contlist) == 0and megamoveflag == 0):
+       if (len(contlist) == 0and megamoveflag == 0):
             image = cv2.putText(numpix, 'f', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2,
                                 cv2.LINE_AA)
             if  kayyyw == 'd':
@@ -363,7 +415,7 @@ while True:
 
     #if timer1 > 10:
     if megamoveflag == 0:
-        keyboard.press("w")
+        #keyboard.press("w")
         sleep(0.01)
         #timer1 = 0
 
