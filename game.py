@@ -47,10 +47,13 @@ def func(idx, status: callable = None):
         #print(position)
         if position < 300 or position > 200:
             if position > 211:
+
                 kbe.key_press(kbe.SC_RIGHT)
+
 
             if position < 211:
                 kbe.key_press(kbe.SC_LEFT)
+
 
 
 
@@ -61,9 +64,11 @@ def func2(idx, status2: callable = None):
         if position < 300 or position > 200:
             if position > 211:
                 kbe.key_press(kbe.SC_UP)
+                time.sleep(0.2)
 
             if position < 211:
                 kbe.key_press(kbe.SC_DOWN)
+                time.sleep(0.2)
 
 
 kayyyw = 'start'
@@ -288,7 +293,7 @@ while True:
     PIDRTIMER = time.perf_counter() - PIDRTIMER2
     if xm > xw and xm < xw + 640 and ym > yw and ym < yw + 480 and megamoveflag == 0:
        if poss_x != 0:
-            PIDRGIVE = PIDR(poss_x , 320.0 , 1.0 , 0.0 , 0.0, PIDRTIMER , -1 , 1)
+            PIDRGIVE = PIDR(poss_x, 320.0, 5.0, 0.2, 0.0, PIDRTIMER , -1 , 1)
             if PIDRGIVE == -1:
                 sleep(0.01)
                 global_status += 10
@@ -299,7 +304,7 @@ while True:
                 #keyboard.press("d")
                 kayyyw= 'd'
                 image = cv2.putText(numpix, 'd' + str(poss_x), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-                time.sleep(0.2)
+                #time.sleep(0.2)
                 PIDRTIMER2 = time.perf_counter()
             elif PIDRGIVE == 1:
                 sleep(0.01)
@@ -311,7 +316,7 @@ while True:
                 #keyboard.press("d")
                 kayyyw= 'a'
                 image = cv2.putText(numpix, 'a' + str(poss_x), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-                time.sleep(0.2)
+                #time.sleep(0.2)
                 PIDRTIMER2 = time.perf_counter()
        
        
@@ -371,7 +376,7 @@ while True:
                     global_status = 211
                 elif global_status < 200:
                     global_status = 211
-                sleep(0.05)
+                #sleep(0.05)
             elif kayyyw == 'a':
                 image = cv2.putText(numpix, 'fa', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2,
                                     cv2.LINE_AA)
@@ -385,7 +390,7 @@ while True:
                     global_status = 211
                 elif global_status < 200:
                     global_status = 211
-                sleep(0.05)
+                #sleep(0.05)
 
 
 
@@ -427,8 +432,9 @@ while True:
 
     #if timer1 > 10:
     if megamoveflag == 0:
+        ...
         #keyboard.press("w")
-        sleep(0.01)
+        #sleep(0.01)
         #timer1 = 0
 
 
