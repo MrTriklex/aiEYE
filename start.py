@@ -39,31 +39,31 @@ xsize , ysize , _ = img.shape
 #            img[xp, yp] = [0, 0, 0]
 #        else:
 #            img[xp, yp] = [summ / 3, summ / 3, summ / 3]
-#for xp in range(xsize):
-#    for yp in range(ysize):
-#        img[xp, yp] = [img.item(xp,-yp,0), img.item(xp,-yp,1), img.item(xp,-yp,2)]
+for xp in range(xsize):
+    for yp in range(ysize):
+        img[xp, yp] = [img.item(-xp,yp,0), img.item(-xp,yp,1), img.item(-xp,yp,2)]
 bsumm = 0
 gsumm = 0
 rsumm = 0
 blurstrong = 10
 blurpixn = 0
-for xp in range(1, xsize-1):  # тут оно работает
-    for yp in range(1, ysize-1):
-        for xb in range (xp - blurstrong , xp+blurstrong):
-            for yb in range(yp - blurstrong, yp + blurstrong):
-                if xb > xp and xb < xsize and yb > yp and yb < ysize:
-                    blurpixn += 1
-                    bsumm += img.item(xb, yb,0)
-                    gsumm += img.item(xb, yb,1)
-                    rsumm += img.item(xb, yb, 1)
-        for xb in range (xp - blurstrong , xp+blurstrong):
-            for yb in range(yp - blurstrong, yp + blurstrong):
-                if xb > xp and xb < xsize and yb > yp and yb < ysize:
-                    img[xb, yb] = [bsumm / blurpixn, gsumm / blurpixn, rsumm / blurpixn]
-        blurpixn = 0
-        bsumm = 0
-        gsumm = 0
-        rsumm = 0
+#for xp in range(1, xsize-1):  # тут оно работает
+#    for yp in range(1, ysize-1):
+#        for xb in range (xp - blurstrong , xp+blurstrong):
+#            for yb in range(yp - blurstrong, yp + blurstrong):
+#                if xb > xp and xb < xsize and yb > yp and yb < ysize:
+#                    blurpixn += 1
+#                    bsumm += img.item(xb, yb,0)
+#                    gsumm += img.item(xb, yb,1)
+#                    rsumm += img.item(xb, yb, 1)
+#        for xb in range (xp - blurstrong , xp+blurstrong):
+#            for yb in range(yp - blurstrong, yp + blurstrong):
+#                if xb > xp and xb < xsize and yb > yp and yb < ysize:
+#                    img[xb, yb] = [bsumm / blurpixn, gsumm / blurpixn, rsumm / blurpixn]
+        #blurpixn = 0
+        #bsumm = 0
+      #  gsumm = 0
+      #  rsumm = 0
         #img[xp, yp+1] = [img.item(xp,yp,0), img.item(xp,yp,1), img.item(xp,yp,2)]
         #img[xp, yp] = [img.item(xp+1,yp,0), img.item(xp+1,yp,1), img.item(xp+1,yp,2)]
         #bsumm = img.item(xp,yp,0) + img.item(xp+1,yp,0) + img.item(xp-1,yp,0) + img.item(xp,yp+1,0) + img.item(xp,yp-1,0)

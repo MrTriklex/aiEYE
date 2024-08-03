@@ -74,9 +74,12 @@ def key_up(scan_code):
 
 
 def key_press(hexKeyCode, interval=0.05):
+    if hexKeyCode == SC_UP:
+        interval = 0
     key_down(hexKeyCode)
     time.sleep(interval)
-    key_up(hexKeyCode)
+    if hexKeyCode != SC_UP:
+        key_up(hexKeyCode)
 
 
 if __name__ == '__main__':
